@@ -16,6 +16,7 @@
       configuration =
         { pkgs, ... }:
         {
+          programs.zsh.enable = true;
           nixpkgs.config.allowUnfree = true;
           environment.systemPackages = [
             pkgs.git
@@ -70,12 +71,15 @@
                 "com.apple.symbolichotkeys" = {
                   AppleSymbolicHotKeys = {
                     "64" = {
-                      enabled = false;
+                      enabled = 0;
+                      value = {
+                        parameters = [ 32 49 1048576 ];
+                        type = "standard";
+                      };
                     };
                   };
                 };
               };
-
             };
           };
           users.users.sean = {
@@ -102,7 +106,7 @@
           zsh = {
             enable = true;
             shellAliases = {
-              s = "darwin-rebuild switch --flake ~/.config/nix-darwin && exec zsh";
+              s = "darwin-rebuild switch --flake ~/.dotfiles#mbp && exec zsh";
               c = "clear";
               rz = "exec zsh";
             };
