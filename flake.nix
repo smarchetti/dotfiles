@@ -1,10 +1,27 @@
 {
   description = "Example Darwin system flake";
-  inputs = import ./inputs.nix;
+  inputs = {
+    nixpkgs = {
+      url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    };
+
+    nix-darwin = {
+      url = "github:LnL7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    home-manager = {
+      url = "github:nix-community/home-manager";
+    };
+  };
   outputs = { self, nix-darwin, nixpkgs, home-manager }:
     let
+
       configuration =
         { pkgs, config, ... }:
+        let
+          tana = pkgs.callPackage ./packages/tana.nix { };
+        in
         {
           programs.zsh.enable = true;
           nix.settings.experimental-features = "nix-command flakes";
@@ -23,17 +40,21 @@
             pkgs.iterm2
             pkgs.nixpkgs-fmt
             pkgs.nodejs_22
+            pkgs.tableplus
             pkgs.pnpm
             pkgs.python3
             pkgs.raycast
             pkgs.slack
             pkgs.spotify
-            pkgs.tableplus
-            pkgs.tmux
-            pkgs.vscode
             pkgs.zoom-us
             pkgs.zsh
+            tana
           ];
+
+          nixpkgs.config.packageOverrides = super: {
+            tableplus = pkgs.callPackage ./packages/tableplus.nix { };
+          };
+
 
           fonts.packages = [
             pkgs.nerdfonts
